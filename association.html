@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Association Stagiaire - Encadrant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Times New Roman', serif;
+      background-image: url('IMG-20250730-WA0021.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: white;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background-color: rgba(0,0,0,0.65);
+      z-index: 0;
+    }
+
+    .navbar {
+      background-color: #333;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      height: 70px;
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar-nav .nav-link {
+      font-weight: bold;
+      font-size: 20px;
+      color: #f8f9fa !important;
+      padding: 5px 15px;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #3399ff !important;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      width: 260px;
+      height: calc(100vh - 70px);
+      background-color: rgba(0,0,0,0.85);
+      padding: 25px 15px;
+      overflow-y: auto;
+      z-index: 9;
+      border-radius: 0 10px 10px 0;
+      color: white;
+    }
+
+    .sidebar h3 {
+      color: #3399ff;
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .sidebar label {
+      font-weight: bold;
+      color: white;
+    }
+
+    .btn-small {
+      font-size: 0.85rem;
+      padding: 6px 12px;
+    }
+
+    .mb-3.d-flex.align-items-end {
+      margin-bottom: 20px !important;
+    }
+
+    .flex-grow-1 {
+      margin-right: 10px;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      border: none;
+    }
+
+    .btn-danger:hover {
+      background-color: #b02a37;
+    }
+
+    .btn-success {
+      background-color: #357ABD;
+      border: none;
+      width: 100%;
+      color: white;
+      font-weight: bold;
+    }
+
+    .btn-success:hover {
+      background-color: #2a5ca9;
+      color: white;
+    }
+
+    .main-content {
+      margin-left: 260px;
+      padding: 60px 40px 75px 40px;
+      min-height: calc(100vh - 70px);
+      box-sizing: border-box;
+      position: relative;
+      z-index: 1;
+      color: black;
+    }
+
+    .table-wrapper {
+      background: linear-gradient(135deg, #4a90e2, #357ABD);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(53, 122, 189, 0.7);
+      color: white;
+    }
+
+    table {
+      min-width: 750px;
+      color: white;
+      border-collapse: collapse;
+    }
+
+    table, th, td {
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    thead th {
+      background-color: #2a5ca9;
+      font-weight: 600;
+      text-align: center;
+      padding: 10px;
+    }
+
+    tbody td {
+      padding: 8px;
+      text-align: center;
+    }
+
+    #confirmation {
+      font-weight: bold;
+      color: #198754;
+      margin-top: 10px;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 25px;
+      background-color: rgba(0,0,0,0.85);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 11px;
+      z-index: 4; /* plus petit que sidebar */
+      font-family: 'Times New Roman', serif;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#"><img src="monapp.png" alt="Logo" height="50" /></a>
+      <div class="collapse navbar-collapse ps-5" id="menuNavbar">
+        <ul class="navbar-nav ms-auto text-end">
+          <li class="nav-item">
+            <a class="nav-link">Geststage, Votre application de gestion de stages en ligne</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar">
+    <h3>Associer un stagiaire à un encadrant</h3>
+    <div class="mb-3 d-flex align-items-end">
+      <div class="flex-grow-1 me-2">
+        <label for="stagiaire">Choisir un stagiaire</label>
+        <select id="stagiaire" class="form-select"></select>
+      </div>
+      <button class="btn btn-danger btn-small" onclick="supprimerStagiaire()">Suppr</button>
+    </div>
+
+    <div class="mb-3 d-flex align-items-end">
+      <div class="flex-grow-1 me-2">
+        <label for="encadrant">Choisir un encadrant</label>
+        <select id="encadrant" class="form-select"></select>
+      </div>
+      <button class="btn btn-danger btn-small" onclick="supprimerEncadrant()">Suppr</button>
+    </div>
+
+    <button class="btn btn-success btn-small mt-2" onclick="associer()">Associer</button>
+    <p id="confirmation"></p>
+    <button class="btn btn-success btn-small mt-2" onclick="window.location.href='interne.html'">Retour</button>
+  </div>
+
+  <div class="main-content">
+    <div class="table-wrapper">
+      <h4 class="text-center mb-4">Voir le résultat</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped table-sm">
+          <thead>
+            <tr>
+              <th>Nom du Stagiaire</th>
+              <th>Email Stagiaire</th>
+              <th>Téléphone Stagiaire</th>
+              <th>Encadrant</th>
+              <th>Fonction</th>
+              <th>Email Encadrant</th>
+              <th>Téléphone Encadrant</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>© 2025 GESTISTAGE</footer>
+
+  <script>
+    let stagiaires = JSON.parse(localStorage.getItem("stagiaires")) || [];
+    let encadrants = JSON.parse(localStorage.getItem("encadreurs")) || [];
+
+    const stagiaireSelect = document.getElementById("stagiaire");
+    const encadrantSelect = document.getElementById("encadrant");
+
+    function rechargerListes() {
+      stagiaireSelect.innerHTML = "";
+      encadrantSelect.innerHTML = "";
+
+      stagiaires.forEach((s, i) => {
+        const option = document.createElement("option");
+        option.value = i;
+        option.text = `${s.nom} ${s.prenom}`;
+        stagiaireSelect.appendChild(option);
+      });
+
+      encadrants.forEach((e, i) => {
+        const option = document.createElement("option");
+        option.value = i;
+        option.text = `${e.nom}`;
+        encadrantSelect.appendChild(option);
+      });
+
+      stagiaireSelect.selectedIndex = -1;
+      encadrantSelect.selectedIndex = -1;
+    }
+
+    function associer() {
+      const stagiaireIndex = stagiaireSelect.selectedIndex;
+      const encadrantIndex = encadrantSelect.selectedIndex;
+
+      if (stagiaireIndex < 0 || encadrantIndex < 0) {
+        alert("Veuillez sélectionner un stagiaire et un encadrant.");
+        return;
+      }
+
+      let associations = JSON.parse(localStorage.getItem("associations")) || [];
+
+      const existe = associations.some(a =>
+        a.stagiaire.email === stagiaires[stagiaireIndex].email &&
+        a.encadrant.email === encadrants[encadrantIndex].email
+      );
+
+      if (existe) {
+        alert("Cette association existe déjà !");
+        return;
+      }
+
+      associations.push({
+        stagiaire: stagiaires[stagiaireIndex],
+        encadrant: encadrants[encadrantIndex]
+      });
+
+      localStorage.setItem("associations", JSON.stringify(associations));
+      document.getElementById("confirmation").textContent = "Association ajoutée avec succès.";
+      rechargerListes();
+      afficherAssociations();
+    }
+
+    function afficherAssociations() {
+      const tbody = document.getElementById("table-body");
+      const associations = JSON.parse(localStorage.getItem("associations")) || [];
+      tbody.innerHTML = "";
+
+      associations.forEach(({ stagiaire, encadrant }, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${stagiaire.nom} ${stagiaire.prenom}</td>
+          <td>${stagiaire.email || ""}</td>
+          <td>${stagiaire.tel || ""}</td>
+          <td>${encadrant.nom}</td>
+          <td>${encadrant.fonction || ""}</td>
+          <td>${encadrant.email || ""}</td>
+          <td>${encadrant.telephone || ""}</td>
+          <td><button class="btn btn-danger btn-sm" onclick="supprimerAssociation(${index})">Suppr</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function supprimerAssociation(index) {
+      let associations = JSON.parse(localStorage.getItem("associations")) || [];
+      associations.splice(index, 1);
+      localStorage.setItem("associations", JSON.stringify(associations));
+      afficherAssociations();
+    }
+
+    function supprimerStagiaire() {
+      const index = stagiaireSelect.selectedIndex;
+      if (index < 0) {
+        alert("Veuillez sélectionner un stagiaire à supprimer.");
+        return;
+      }
+
+      const stagiaire = stagiaires[index];
+      if (confirm(`Supprimer ${stagiaire.nom} ${stagiaire.prenom} ? Cela supprimera aussi ses associations.`)) {
+        stagiaires.splice(index, 1);
+        localStorage.setItem("stagiaires", JSON.stringify(stagiaires));
+
+        let associations = JSON.parse(localStorage.getItem("associations")) || [];
+        associations = associations.filter(a => a.stagiaire.email !== stagiaire.email);
+        localStorage.setItem("associations", JSON.stringify(associations));
+
+        rechargerListes();
+        afficherAssociations();
+      }
+    }
+
+    function supprimerEncadrant() {
+      const index = encadrantSelect.selectedIndex;
+      if (index < 0) {
+        alert("Veuillez sélectionner un encadrant à supprimer.");
+        return;
+      }
+
+      const encadrant = encadrants[index];
+      if (confirm(`Supprimer ${encadrant.nom} ? Cela supprimera aussi ses associations.`)) {
+        encadrants.splice(index, 1);
+        localStorage.setItem("encadreurs", JSON.stringify(encadrants));
+
+        let associations = JSON.parse(localStorage.getItem("associations")) || [];
+        associations = associations.filter(a => a.encadrant.email !== encadrant.email);
+        localStorage.setItem("associations", JSON.stringify(associations));
+
+        const superviseur = JSON.parse(localStorage.getItem("superviseur"));
+        if (superviseur && superviseur.email === encadrant.email) {
+          localStorage.removeItem("superviseur");
+        }
+
+        rechargerListes();
+        afficherAssociations();
+      }
+    }
+
+    window.onload = function () {
+      const superviseur = JSON.parse(localStorage.getItem("superviseur"));
+      if (superviseur) {
+        const exists = encadrants.some(e => e.email === superviseur.email);
+        if (!exists) {
+          encadrants.push({
+            nom: superviseur.nom,
+            telephone: superviseur.telephone || "",
+            email: superviseur.email || "",
+            fonction: "Encadrant externe"
+          });
+          localStorage.setItem("encadreurs", JSON.stringify(encadrants));
+        }
+      }
+
+      stagiaires = JSON.parse(localStorage.getItem("stagiaires")) || [];
+      encadrants = JSON.parse(localStorage.getItem("encadreurs")) || [];
+      rechargerListes();
+      afficherAssociations();
+    };
+  </script>
+</body>
+</html>

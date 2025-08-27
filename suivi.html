@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Suivi et Associations des Stagiaires</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e3f2fd;
+    }
+
+    .table-wrapper {
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      max-width: 1200px;
+      margin: auto;
+      margin-bottom: 40px;
+    }
+
+    .container-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .container-custom {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 550px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+    }
+
+    h2, h5 {
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: bold;
+    }
+
+    .text-right {
+      text-align: right;
+    } @media (max-width: 768px) {
+  .container-custom {
+    margin-top: 20px;
+  }
+}
+  </style>
+</head>
+
+<body>
+
+  <div class="table-wrapper">
+    <h2 class="text-center mb-4">Liste des Associations Stagiaires / Encadreurs</h2>
+    <div class="table-responsive"><table class="table table-bordered table-striped">
+      <thead class="table-primary">
+        <tr>
+          <th>Nom du Stagiaire</th>
+          <th>Adresse e-mail</th>
+          <th>Numéro de téléphone</th>
+          <th>Encadreur académique</th>
+          <th>Nom de l'Encadreur</th>
+          <th>Adresse e-mail</th>
+          <th>Numéro de téléphone</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table></div> 
+  </div>
+
+  <div class="container-row">
+    <div class="container-custom">
+      <h5 class="mb-4 text-center">Attribuer une tâche</h5>
+      <div class="mb-3">
+        <label>Nom du stagiaire</label>
+        <input id="nomStagiaire" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label>Besogne</label>
+        <input id="texteTache" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label>Date</label>
+        <input id="dateTache" type="date" class="form-control" />
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-success w-50" onclick="ajouterTache()">Attribuer</button>
+        <button class="btn btn-info text-white w-50" onclick="afficherTaches()">Voir les tâches</button>
+      </div>
+    </div>
+
+    <div class="container-custom">
+      <h5 class="text-center mb-3">Tâches attribuées</h5>
+      <div id="listeTaches"></div>
+      <div class="text-end mt-3">
+        <button class="btn btn-primary" onclick="window.location.href='stagicausencadreur .html'">Échanger avec l'encadrant académique</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const associations = JSON.parse(localStorage.getItem("associations")) || [];
+    const tbody = document.getElementById("table-body");
+
+    associations.forEach(({ stagiaire, encadreur }) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${stagiaire.nom} ${stagiaire.prenom}</td>
+        <td>${stagiaire.email || ""}</td>
+        <td>${stagiaire.tel || ""}</td>
+        <td>${encadreur.fonction || ""}</td>
+        <td>${encadreur.nom}</td>
+        <td>${encadreur.email || ""}</td>
+        <td>${encadreur.telephone || ""}</td>
+      `;
+      tbody.appendChild(row);
+    });
+    let allTasks = JSON.parse(localStorage.getItem("suivi_taches")) || {};
+
+    function ajouterTache() {
+      const nom = document.getElementById("nomStagiaire").value.trim();
+      const texte = document.getElementById("texteTache").value.trim();
+      const date = document.getElementById("dateTache").value;
+
+      if (!nom || !texte || !date) {
+        alert("Tous les champs sont requis !");
+        return;
+      }
+
+      if (!allTasks[nom]) allTasks[nom] = [];
+      allTasks[nom].push({ texte, date, fait: null, raison: "" });
+
+      localStorage.setItem("suivi_taches", JSON.stringify(allTasks));
+      afficherTaches();
+    }
+
+    function afficherTaches() {
+      const zone = document.getElementById("listeTaches");
+      zone.innerHTML = "";
+      allTasks = JSON.parse(localStorage.getItem("suivi_taches")) || {};
+
+      const noms = Object.keys(allTasks);
+      if (noms.length === 0) {
+        zone.innerHTML = "<p class='text-muted'>Aucune tâche attribuée pour l’instant.</p>";
+        return;
+      }
+
+      noms.forEach((nom) => {
+        const taches = allTasks[nom];
+        if (!taches || taches.length === 0) return;
+
+        const blocNom = document.createElement("div");
+        blocNom.className = "mb-4";
+        const titre = document.createElement("h6");
+        titre.className = "text-primary border-bottom pb-1";
+        titre.textContent = `Stagiaire : ${nom}`;
+        blocNom.appendChild(titre);
+
+        taches.forEach((t, i) => {
+          const etat = t.fait === true
+            ? "<span class='badge bg-success'>Fait</span>"
+            : t.fait === false
+            ? "<span class='badge bg-danger'>Non fait</span>"
+            : "<span class='badge bg-secondary'>Non renseigné</span>";
+
+          const justification = t.fait === false && t.raison
+            ? `<div class="mt-2"><strong>Justification :</strong> <em>${t.raison}</em></div>`
+            : "";
+
+          const div = document.createElement("div");
+          div.className = "mb-3 p-3 bg-white border rounded";
+
+          div.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>${t.texte}</strong><br>
+                <small class="text-muted">Date : ${t.date}</small>
+                <div class="mt-2">${etat}</div>
+                ${justification}
+              </div>
+              <button class="btn btn-sm btn-danger" onclick="supprimerTache('${nom}', ${i})">Supprimer</button>
+            </div>
+          `;
+          blocNom.appendChild(div);
+        });
+
+        zone.appendChild(blocNom);
+      });
+    }
+
+    function supprimerTache(nom, index) {
+      if (confirm("Supprimer cette tâche ?")) {
+        allTasks[nom].splice(index, 1);
+        if (allTasks[nom].length === 0) {
+          delete allTasks[nom];
+        }
+        localStorage.setItem("suivi_taches", JSON.stringify(allTasks));
+        afficherTaches();
+      }
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
